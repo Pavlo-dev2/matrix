@@ -51,7 +51,7 @@ uint8_t *retfbp(int fb0);
 int closefbp(uint8_t *fbp);
 //close fb0 pointer;
 
-int drawblock(uint8_t *fbp, long x, long y, int r, int g, int b);
+int drawblock(uint8_t *fbp, float x, float y, int r, int g, int b);
 //draws block on cord x:y;
 //if x or y == -1, draw the whole line;
 //if x == -1 and y == -1 draws the whole feld;
@@ -235,29 +235,29 @@ int closefbp(uint8_t *fbp)
 	munmap(fbp, finfo.smem_len);
 }
 
-int drawblock(uint8_t *fdp, long x, long y, int r, int g, int b)
+int drawblock(uint8_t *fdp, float x, float y, int r, int g, int b)
 {
 	long xs, xe, ys, ye;
 
 	if (y != -1)
 	{
-		ys = feld_y_start + block_hight*y;
-		ye = ys + block_hight;
+		ys = (int) (feld_y_start + block_hight*y);
+		ye = (int) (ys + block_hight);
 	}
 	else
 	{	
-		ys = feld_y_start;
-		ye = feld_y_end;
+		ys = (int) (feld_y_start);
+		ye = (int) (feld_y_end);
 	}
 	if (x != -1)
 	{
-		xs = feld_x_start + block_wigth*x;
-		xe = xs + block_wigth;
+		xs = (int) (feld_x_start + block_wigth*x);
+		xe = (int) (xs + block_wigth);
 	}
 	else
 	{	
-		xs = feld_x_start;
-		xe = feld_x_end;
+		xs = (int) (feld_x_start);
+		xe = (int) (feld_x_end);
 	}
 
 	for (long ay = ys; ay < ye; ay++)

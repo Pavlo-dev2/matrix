@@ -46,7 +46,7 @@ uint8_t *retfbp(int fb0);
 int closefbp(uint8_t *fbp);
 //close fb0 pointer;
 
-int drawblock(uint8_t *fbp, long x, long y, int r, int g, int b);
+int drawblock(uint8_t *fbp, float x, float y, int r, int g, int b);
 //draws block on cord x:y;
 //if x or y == -1, draw the whole line;
 //if x == -1 and y == -1 draws the whole feld;

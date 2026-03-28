@@ -70,4 +70,6 @@ int drawfild(char *fild)
 			}
 		}
 	}
+	drawblock(fbp, 0.5, 0.5, 128, 128, 128);
+	return 0;
 }
