@@ -11,7 +11,13 @@ int drawfild();
 int prepfeld(int x, int y);
 char* getfeld(FILE *fp);
 int drawfild(char *fild);
+int drawplayer();
 
+//player cords
+float player_x = 0;
+float player_y = 0;
+
+//fbo and fraimbuffer pointer
 int fb0;
 uint8_t *fbp;
 
@@ -22,6 +28,14 @@ int main()
 	printf("%s", feld);
 	prepfeld(XSIDE, YSIDE);
 	drawfild(feld);
+	while (1)
+	{
+		drawblock(fbp, player_x, player_y, 0, 0, 70);
+		player_x += 0.2;
+		player_y += 0.2;
+		drawplayer();
+		sleepsec(0.2);
+	}
 	return 0;
 }
 
@@ -70,6 +84,11 @@ int drawfild(char *fild)
 			}
 		}
 	}
-	drawblock(fbp, 0.5, 0.5, 128, 128, 128);
+	return 0;
+}
+
+int drawplayer()
+{
+	drawblock(fbp, player_x, player_y, 0, 15, 0);
 	return 0;
 }
