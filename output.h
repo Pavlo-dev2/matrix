@@ -51,11 +51,7 @@ int drawblock(uint8_t *fbp, float x, float y, int r, int g, int b);
 //if x or y == -1, draw the whole line;
 //if x == -1 and y == -1 draws the whole feld;
 
-/*
-int retfdfb0();
-int drawrect(unsigned char r, unsigned char g, unsigned char b, char x, char y, int un, int fb0);
-int clearfeld(unsigned char r, unsigned char g, unsigned char b, int fb0);
-int* info(int fb0);
-*/
+int clearframebuffer(uint8_t *fbp);
+//clear the framebuffer(full with 0);
 
 #endif

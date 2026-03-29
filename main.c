@@ -6,6 +6,7 @@
 #define ARRLEN 210
 #define XSIDE 14
 #define YSIDE 14
+#define TIME 0.05
 
 int drawfild();
 int prepfeld(int x, int y);
@@ -26,15 +27,19 @@ int main()
 	FILE *fp = fopen("map1.txt", "r");
 	char *feld = getfeld(fp);
 	printf("%s", feld);
+	clearframebuffer(fbp);
 	prepfeld(XSIDE, YSIDE);
-	drawfild(feld);
 	while (1)
 	{
-		drawblock(fbp, player_x, player_y, 0, 0, 70);
-		player_x += 0.2;
-		player_y += 0.2;
+		long double new_time = rettime();
+		clearframebuffer(fbp);
+		drawfild(feld);
+		player_x += 0.5;
+		player_y += 0.5;
 		drawplayer();
-		sleepsec(0.2);
+		printf("Time: %Lf;\n", timediff(rettime(), new_time));
+		printf("Lol\n");
+		sleepsec(TIME - timediff(rettime(), new_time));
 	}
 	return 0;
 }
