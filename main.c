@@ -3,6 +3,8 @@
 #include "timing.h"
 #include "input.h"
 #include "output.h"
+#include <unistd.h>
+#include <linux/input.h>
 #define ARRLEN 210
 #define XSIDE 14
 #define YSIDE 14
@@ -13,6 +15,7 @@ int prepfeld(int x, int y);
 char* getfeld(FILE *fp);
 int drawfild(char *fild);
 int drawplayer();
+int getdir(int fd, long double time);
 
 //player cords
 float player_x = 0;
@@ -21,26 +24,43 @@ float player_y = 0;
 //fbo and fraimbuffer pointer
 int fb0;
 uint8_t *fbp;
+int fdie;//input file deskriptor
 
 int main()
 {
 	FILE *fp = fopen("map1.txt", "r");
 	char *feld = getfeld(fp);
 	printf("%s", feld);
+	fdie = retfd(1, 2);
 	clearframebuffer(fbp);
 	prepfeld(XSIDE, YSIDE);
 	while (1)
 	{
 		long double new_time = rettime();
+		char dir = getdir(fdie, 0.2);
+		switch(dir)
+		{
+			case 'u':
+				player_y -= 0.5;
+				break;
+			case 'd':
+				player_y += 0.5;
+				break;
+			case 'r':
+				player_x += 0.5;
+				break;
+			case 'l':
+				player_x -= 0.5;
+				break;
+		}
 		clearframebuffer(fbp);
 		drawfild(feld);
-		player_x += 0.5;
-		player_y += 0.5;
 		drawplayer();
 		printf("Time: %Lf;\n", timediff(rettime(), new_time));
-		printf("Lol\n");
+		printf("%c\n", dir);
 		sleepsec(TIME - timediff(rettime(), new_time));
 	}
+	clearframebuffer(fbp);
 	return 0;
 }
 
@@ -96,4 +116,43 @@ int drawplayer()
 {
 	drawblock(fbp, player_x, player_y, 0, 15, 0);
 	return 0;
+}
+
+int getdir(int fd, long double time)
+//get directory
+{
+	char dir = 'r';
+	static int events[] = {KEY_W, KEY_A, KEY_S, KEY_D, KEY_E};
+	int code = ifeventscode(fd, events, 5, 1, time);
+	switch (code)
+	{
+		case KEY_W:
+			if (dir != 'd')
+			{
+				dir = 'u';
+				break;
+			}
+		case KEY_D:
+			if (dir != 'l')
+			{
+				dir = 'r';
+				break;
+			}
+		case KEY_S:
+			if (dir != 'u')
+			{
+				dir = 'd';
+				break;
+			}
+		case KEY_A:
+			if (dir != 'r')
+			{
+				dir = 'l';
+				break;
+			}
+		case KEY_E:
+			dir = 'E';
+			break;
+	}
+	return dir;
 }
