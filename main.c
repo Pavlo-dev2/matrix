@@ -8,14 +8,14 @@
 #define ARRLEN 210
 #define XSIDE 14
 #define YSIDE 14
-#define TIME 0.05
+#define TIME 0.1
 
 int drawfild();
 int prepfeld(int x, int y);
 char* getfeld(FILE *fp);
 int drawfild(char *fild);
 int drawplayer();
-int getdir(int fd, long double time);
+int getdir(int fd);
 
 //player cords
 float player_x = 0;
@@ -25,6 +25,7 @@ float player_y = 0;
 int fb0;
 uint8_t *fbp;
 int fdie;//input file deskriptor
+long double getdirtime;//time to get direction;
 
 int main()
 {
@@ -34,10 +35,11 @@ int main()
 	fdie = retfd(1, 2);
 	clearframebuffer(fbp);
 	prepfeld(XSIDE, YSIDE);
+	getdirtime = TIME * 0.6;
 	while (1)
 	{
 		long double new_time = rettime();
-		char dir = getdir(fdie, 0.2);
+		char dir = getdir(fdie);
 		switch(dir)
 		{
 			case 'u':
@@ -56,9 +58,11 @@ int main()
 		clearframebuffer(fbp);
 		drawfild(feld);
 		drawplayer();
-		printf("Time: %Lf;\n", timediff(rettime(), new_time));
-		printf("%c\n", dir);
-		sleepsec(TIME - timediff(rettime(), new_time));
+		//printf("%c\n", dir);
+		fflush(stdout);
+		//printf("B%Lf\n", timediff(new_time, rettime()));
+		sleepsec(TIME - timediff(new_time, rettime()));
+		//printf("A%Lf\n", timediff(new_time, rettime()));
 	}
 	clearframebuffer(fbp);
 	return 0;
@@ -118,41 +122,30 @@ int drawplayer()
 	return 0;
 }
 
-int getdir(int fd, long double time)
+int getdir(int fd)
 //get directory
 {
-	char dir = 'r';
+	static char dir = 'r';
 	static int events[] = {KEY_W, KEY_A, KEY_S, KEY_D, KEY_E};
-	int code = ifeventscode(fd, events, 5, 1, time);
+	int code = ifeventscode(fd, events, 5, 1, getdirtime);
 	switch (code)
 	{
 		case KEY_W:
-			if (dir != 'd')
-			{
-				dir = 'u';
-				break;
-			}
+			dir = 'u';
+			break;
 		case KEY_D:
-			if (dir != 'l')
-			{
-				dir = 'r';
-				break;
-			}
+			dir = 'r';
+			break;
 		case KEY_S:
-			if (dir != 'u')
-			{
-				dir = 'd';
-				break;
-			}
+			dir = 'd';
+			break;
 		case KEY_A:
-			if (dir != 'r')
-			{
-				dir = 'l';
-				break;
-			}
+			dir = 'l';
+			break;
 		case KEY_E:
 			dir = 'E';
 			break;
 	}
+	//printf("Function done\n");
 	return dir;
 }

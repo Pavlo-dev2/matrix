@@ -17,7 +17,7 @@ int* ifevents(int fd, void *events, char type, int time);
 //type - type of shering, 0 for first event, 1 for last;
 //waits time seconds if nonblocking;
 
-int ifeventscode(int fd, int *events, long arrlen, char type, int time);
+int ifeventscode(int fd, int *events, long arrlen, char type, long double time);
 //events - array of intgers, codes of keys;
 //returns event code if event from events hapend(key pressed or let), else -1;
 //type - type of shering, 0 for first event, 1 for last;
