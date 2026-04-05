@@ -9,6 +9,8 @@
 #define XSIDE 14
 #define YSIDE 14
 #define TIME 0.1
+#define TTGDI 0.6//time to get girection = TIME * TTGDI
+#define PLAYERSTEP 0.5
 
 int drawfild();
 int prepfeld(int x, int y);
@@ -16,10 +18,17 @@ char* getfeld(FILE *fp);
 int drawfild(char *fild);
 int drawplayer();
 int getdir(int fd);
+int checkplayerpossision(char *feld);
+//return 1 if player can't move 
 
 //player cords
 float player_x = 0;
 float player_y = 0;
+float player_nx = 0;
+float player_ny = 0;
+float playerstep_x = 0;
+float playerstep_y = 0;
+char *eloveddirections;//directions player can mave in
 
 //fbo and fraimbuffer pointer
 int fb0;
@@ -35,30 +44,62 @@ int main()
 	fdie = retfd(1, 2);
 	clearframebuffer(fbp);
 	prepfeld(XSIDE, YSIDE);
-	getdirtime = TIME * 0.6;
+	getdirtime = TIME * TTGDI;
+	char dir = 'r';
+	char ndir;
 	while (1)
 	{
 		long double new_time = rettime();
-		char dir = getdir(fdie);
+		ndir = getdir(fdie);
 		switch(dir)
 		{
 			case 'u':
-				player_y -= 0.5;
+				player_ny -= PLAYERSTEP;
 				break;
 			case 'd':
-				player_y += 0.5;
+				player_ny += PLAYERSTEP;
 				break;
 			case 'r':
-				player_x += 0.5;
+				player_nx += PLAYERSTEP;
 				break;
 			case 'l':
-				player_x -= 0.5;
+				player_nx -= PLAYERSTEP;
 				break;
 		}
+		if (!checkplayerpossision(feld))
+		{
+			if (dir == 'u' || dir == 'l')
+			{
+				playerstep_x += player_x - player_nx;
+				playerstep_y += player_y - player_ny;
+				//printf("Lol1\n");
+			}
+			else if (dir == 'd' || dir == 'l')
+			{
+				playerstep_x += player_nx - player_x;
+				playerstep_y += player_ny - player_y;
+				//printf("Lol2\n");
+			}
+			//printf("APlayerstep_x: %f, Playerstep_y: %f\n", playerstep_x, playerstep_y);
+			if ((playerstep_x == ((int) playerstep_x)) && (playerstep_y == ((int) playerstep_y)))
+			{
+				dir = ndir;
+				playerstep_y = playerstep_x = 0;
+				printf("COND: 1");
+			}
+			//printf("CPlayerstep_x: %f, Playerstep_y: %f\n", playerstep_x, playerstep_y);
+			printf("Dir: %c\n", dir);
+			player_x = player_nx;
+			player_y = player_ny;
+		}
+		player_nx = player_x;
+		player_ny = player_y;
+		
 		clearframebuffer(fbp);
 		drawfild(feld);
 		drawplayer();
-		//printf("%c\n", dir);
+		//printf("%c\n", dir);yy
+		printf("BPlayerstep_x: %f, Playerstep_y: %f\n", playerstep_x, playerstep_y);
 		fflush(stdout);
 		//printf("B%Lf\n", timediff(new_time, rettime()));
 		sleepsec(TIME - timediff(new_time, rettime()));
@@ -74,7 +115,7 @@ char* getfeld(FILE *fp)
 	char nc;
 	int i;
 	for (i = 0; i < ARRLEN && (feld[i] = nc = fgetc(fp)) != '\0'; i++);
-	printf("%d\n", i);
+	//printf("%d\n", i);
 	return feld;
 }
 
@@ -148,4 +189,15 @@ int getdir(int fd)
 	}
 	//printf("Function done\n");
 	return dir;
+}
+
+int checkplayerpossision(char *feld)
+{
+	//if (feld[((int) player_y)*(X_SIDE+1)+((int) player_x)] == '#');
+	
+	if (player_nx < 0 || player_nx > 13 || player_ny < 0 || player_ny > 13)
+	{
+		return 1;
+	}
+	return 0;
 }
