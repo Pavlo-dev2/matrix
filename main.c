@@ -5,6 +5,7 @@
 #include "output.h"
 #include <unistd.h>
 #include <linux/input.h>
+#include <math.h>
 #define ARRLEN 210
 #define XSIDE 14
 #define YSIDE 14
@@ -74,14 +75,15 @@ int main()
 				playerstep_y += player_y - player_ny;
 				//printf("Lol1\n");
 			}
-			else if (dir == 'd' || dir == 'l')
+			else if (dir == 'd' || dir == 'r')
 			{
 				playerstep_x += player_nx - player_x;
 				playerstep_y += player_ny - player_y;
 				//printf("Lol2\n");
 			}
 			//printf("APlayerstep_x: %f, Playerstep_y: %f\n", playerstep_x, playerstep_y);
-			if ((playerstep_x == ((int) playerstep_x)) && (playerstep_y == ((int) playerstep_y)))
+			//if ((playerstep_x == ((int) playerstep_x)) && (playerstep_y == ((int) playerstep_y)))
+			if (fabs(playerstep_x - round(playerstep_x)) < 0.0001 && fabs(playerstep_y - round(playerstep_y)) < 0.0001)
 			{
 				dir = ndir;
 				playerstep_y = playerstep_x = 0;
