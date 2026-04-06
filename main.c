@@ -6,9 +6,9 @@
 #include <unistd.h>
 #include <linux/input.h>
 #include <math.h>
-#define ARRLEN 210
-#define XSIDE 14
-#define YSIDE 14
+#define ARRLEN 272
+#define XSIDE 16
+#define YSIDE 16
 #define TIME 0.1
 #define TTGDI 0.6//time to get girection = TIME * TTGDI
 #define PLAYERSTEP 0.5
@@ -41,7 +41,6 @@ int main()
 {
 	FILE *fp = fopen("map1.txt", "r");
 	char *feld = getfeld(fp);
-	printf("%s", feld);
 	fdie = retfd(1, 2);
 	clearframebuffer(fbp);
 	prepfeld(XSIDE, YSIDE);
@@ -51,7 +50,17 @@ int main()
 	while (1)
 	{
 		long double new_time = rettime();
+		
+		//get direction
 		ndir = getdir(fdie);
+		
+		//exite if e clicked
+		if (ndir == 'E')
+		{
+			clearframebuffer(fbp);
+			return 0;
+		}
+
 		switch(dir)
 		{
 			case 'u':
@@ -67,45 +76,40 @@ int main()
 				player_nx -= PLAYERSTEP;
 				break;
 		}
-		if (!checkplayerpossision(feld))
+		
+		//count player step
+		int s = !checkplayerpossision(feld);
+		if (dir == 'u' || dir == 'l')
 		{
-			if (dir == 'u' || dir == 'l')
-			{
-				playerstep_x += player_x - player_nx;
-				playerstep_y += player_y - player_ny;
-				//printf("Lol1\n");
-			}
-			else if (dir == 'd' || dir == 'r')
-			{
-				playerstep_x += player_nx - player_x;
-				playerstep_y += player_ny - player_y;
-				//printf("Lol2\n");
-			}
-			//printf("APlayerstep_x: %f, Playerstep_y: %f\n", playerstep_x, playerstep_y);
-			//if ((playerstep_x == ((int) playerstep_x)) && (playerstep_y == ((int) playerstep_y)))
-			if (fabs(playerstep_x - round(playerstep_x)) < 0.0001 && fabs(playerstep_y - round(playerstep_y)) < 0.0001)
-			{
-				dir = ndir;
-				playerstep_y = playerstep_x = 0;
-				printf("COND: 1");
-			}
-			//printf("CPlayerstep_x: %f, Playerstep_y: %f\n", playerstep_x, playerstep_y);
-			printf("Dir: %c\n", dir);
+			playerstep_x += player_x - player_nx;
+			playerstep_y += player_y - player_ny;
+		}
+		else if (dir == 'd' || dir == 'r')
+		{
+			playerstep_x += player_nx - player_x;
+			playerstep_y += player_ny - player_y;
+		}
+		
+		//if can move, move
+		if ((s || ndir != dir) && fabs(playerstep_x - round(playerstep_x)) < 0.0001 && fabs(playerstep_y - round(playerstep_y)) < 0.0001)
+		{
+			dir = ndir;
+			playerstep_y = playerstep_x = 0;
+		}
+		if (s)
+		{
 			player_x = player_nx;
 			player_y = player_ny;
 		}
 		player_nx = player_x;
 		player_ny = player_y;
 		
+		//draw
 		clearframebuffer(fbp);
 		drawfild(feld);
 		drawplayer();
-		//printf("%c\n", dir);yy
-		printf("BPlayerstep_x: %f, Playerstep_y: %f\n", playerstep_x, playerstep_y);
-		fflush(stdout);
-		//printf("B%Lf\n", timediff(new_time, rettime()));
+		//fflush(stdout);
 		sleepsec(TIME - timediff(new_time, rettime()));
-		//printf("A%Lf\n", timediff(new_time, rettime()));
 	}
 	clearframebuffer(fbp);
 	return 0;
@@ -197,7 +201,7 @@ int checkplayerpossision(char *feld)
 {
 	//if (feld[((int) player_y)*(X_SIDE+1)+((int) player_x)] == '#');
 	
-	if (player_nx < 0 || player_nx > 13 || player_ny < 0 || player_ny > 13)
+	if (player_nx < 0 || player_nx > XSIDE-1 || player_ny < 0 || player_ny > YSIDE-1)
 	{
 		return 1;
 	}
