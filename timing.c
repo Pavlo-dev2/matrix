@@ -22,6 +22,10 @@ long double timediff(long double time1, long double time2)
 int sleepsec(long double time)
 //sleep time seconds
 {
+	if (time < 0.0)
+	{
+		return 1;
+	}
 	struct timespec req;
 	req.tv_sec = (time_t) time;
 	req.tv_nsec = (long) ((time - req.tv_sec) * 1e9);

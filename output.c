@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -290,12 +291,13 @@ int drawblock(uint8_t *fdp, float x, float y, int r, int g, int b)
 
 int clearframebuffer(uint8_t *fbp)
 {
-	for (unsigned long pos = 0; pos < finfo.smem_len; pos++)
+	memset(fbp, 0, finfo.smem_len);
+	/*for (unsigned long pos = 0; pos < finfo.smem_len; pos++)
 	{
 		if (vinfo.bits_per_pixel == 32)
 		{
 			fbp[pos] = 0;
 		}
-	}
+	}*/
 }
 
