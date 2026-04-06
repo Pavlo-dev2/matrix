@@ -42,8 +42,8 @@ int main()
 	FILE *fp = fopen("map1.txt", "r");
 	char *feld = getfeld(fp);
 	fdie = retfd(1, 2);
-	clearframebuffer(fbp);
 	prepfeld(XSIDE, YSIDE);
+	clearframebuffer(fbp);
 	getdirtime = TIME * TTGDI;
 	char dir = 'r';
 	char ndir;
