@@ -76,6 +76,12 @@ static long feld_y_end;//feld y start posison in pixel
 int retfdfb0()
 {
 	int fb0 = open("/dev/fb0", O_RDWR);
+	if (fb0 < 0)
+	{
+		perror("open /dev/fb0");
+		exit(1);
+	}
+	return fb0;
 }
 
 int getinfos(int fb0)

@@ -199,8 +199,6 @@ int getdir(int fd)
 
 int checkplayerpossision(char *feld)
 {
-	//if (feld[((int) player_y)*(X_SIDE+1)+((int) player_x)] == '#');
-	
 	if (player_nx < 0 || player_nx > XSIDE-1 || player_ny < 0 || player_ny > YSIDE-1)
 	{
 		return 1;

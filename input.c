@@ -12,12 +12,12 @@ int retfd(char type, char num);
 //type - type of the deckriptor, 0: Blocking, 1: Nonblocking;
 //num - number of the /dev/input/event* file;
 
-int ifevent(int fd, int keynum, char evval, int time);
+int ifevent(int fd, int keynum, char evval, long double time);
 //returns 1 if event with code keynum and value evtype hapend, else 0;
 //waits time second if nonblocking;
 //if time == -1 wait until event hapend
 
-int* ifevents(int fd, void *events, char type, int time);
+int* ifevents(int fd, void *events, char type, long double time);
 //events - array of intger arrays, 2 element ech, code of key and value of the event, last element must be NULL;
 //returns event([code, value])if event from events hapend, else NULL;
 //type - type of shering, 0 for first event, 1 for last;
@@ -30,7 +30,7 @@ int ifeventscode(int fd, int *events, long arrlen, char type, long double time);
 //waits time seconds if nonblocking;
 //if events == NULL reacts to all of events;
 
-int ifeventsvalue(int fd, int eventsvalue, char type, int time, int *ignor, long arrlen);
+int ifeventsvalue(int fd, int eventsvalue, char type, long double time, int *ignor, long arrlen);
 //eventsvalue - value of event(0 or 1);
 //returns event code if event with this value hapend(key pressed or let), else -1;
 //type - type of shering, 0 for first event, 1 for last;
@@ -38,7 +38,7 @@ int ifeventsvalue(int fd, int eventsvalue, char type, int time, int *ignor, long
 //if events == NULL reacts to all of events;
 //ignor - array of codes that should be ignored:
 
-int* ifanyevents(int fd, char type, int time, void *ignor);
+int* ifanyevents(int fd, char type, long double time, void *ignor);
 //returns event([code, value]) if any event hapend else &{-1, -1};
 //type - type of shering, 0 for first event, 1 for last;
 //waits time seconds if nonblocking;
@@ -47,7 +47,7 @@ int* ifanyevents(int fd, char type, int time, void *ignor);
 static int ifinparr(int **arr, int *vel);
 static int ifinarr(int *arr, long arrlen, int vel);
 
-static long double sleeptime = 0.001;//time * sleeptime = waiting time;
+static long double sleeptime = 0.0005;//time * sleeptime = waiting time;
 
 int retfd(char type, char num)
 {
@@ -66,7 +66,7 @@ int retfd(char type, char num)
 	return fd;
 }
 
-int ifevent(int fd, int keynum, char evval, int time)
+int ifevent(int fd, int keynum, char evval, long double time)
 {
 	struct input_event ev;
 	long double bt = rettime();//begining time;
@@ -84,7 +84,7 @@ int ifevent(int fd, int keynum, char evval, int time)
 
 }
 
-int* ifevents(int fd, void* events, char type, int time)
+int* ifevents(int fd, void* events, char type, long double time)
 {
 	struct input_event ev;
 	
@@ -138,7 +138,10 @@ int ifeventscode(int fd, int *events, long arrlen, char type, long double time)
 	long double bt = rettime();//begining time;
 	while (timediff(bt, rettime()) < time || time == -1)
 	{
-		read(fd, &ev, sizeof(ev));
+		if (0 > read(fd, &ev, sizeof(ev)))
+		{
+			continue;
+		}
 		nec = ev.code;
 		for(int i = 0; i < arrlen; i++)
 		{
@@ -159,7 +162,7 @@ int ifeventscode(int fd, int *events, long arrlen, char type, long double time)
 	return last_code;
 }
 
-int ifeventsvalue(int fd, int eventsvalue, char type, int time, int *ignor, long arrlen)
+int ifeventsvalue(int fd, int eventsvalue, char type, long double time, int *ignor, long arrlen)
 {
 	struct input_event ev;
 	
@@ -193,7 +196,7 @@ int ifeventsvalue(int fd, int eventsvalue, char type, int time, int *ignor, long
 	return last_code;
 }
 
-int* ifanyevents(int fd, char type, int time, void *ignor)
+int* ifanyevents(int fd, char type, long double time, void *ignor)
 {
 	//printf("Masseg 1\n");
 	printf("ignor: %p\n", ignor);
@@ -241,7 +244,6 @@ static int ifinparr(int **arr, int *vel)
 	}
 	for(int i = 0; arr[i] != NULL; i++)
 	{
-		//if ((((int*)arr)[i])[0] == vel[0] && (((int*)arr)[i])[1] == vel[1])
 		if (*(arr[i]) == vel[0] && *(arr[i]+1) == vel[1])
 		{
 			return 1;
