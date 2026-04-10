@@ -30,6 +30,7 @@ float player_ny = 0;
 float playerstep_x = 0;
 float playerstep_y = 0;
 char *eloveddirections;//directions player can mave in
+char dir = 'r';
 
 //fbo and fraimbuffer pointer
 int fb0;
@@ -45,7 +46,6 @@ int main()
 	prepfeld(XSIDE, YSIDE);
 	clearframebuffer(fbp);
 	getdirtime = TIME * TTGDI;
-	char dir = 'r';
 	char ndir;
 	while (1)
 	{
@@ -199,7 +199,59 @@ int getdir(int fd)
 
 int checkplayerpossision(char *feld)
 {
+	printf("Char: %c, Walue: %d\n%f, %f\n", feld[(int) (player_ny*(XSIDE+1) + player_nx)], (int) (player_ny*(XSIDE+1) + player_nx), player_nx, player_ny);
+	fflush(stdout);
 	if (player_nx < 0 || player_nx > XSIDE-1 || player_ny < 0 || player_ny > YSIDE-1)
+	{
+		return 1;
+	}
+	//feld[(int) (round(player_ny)*(XSIDE+1) + round(player_nx))] == '#'
+	int inx, iny;
+	switch(dir)
+	{
+		case 'u':
+			if (fabs(player_ny - round(player_ny)) > 0.3)
+			{
+				iny = round(player_ny)+1;
+			}
+			else
+			{
+				iny = round(player_ny);
+			}
+			break;
+		case 'd':
+			if (fabs(player_ny - round(player_ny)) > 0.3)
+			{
+				iny = round(player_ny)+1;
+			}
+			else
+			{
+				iny = round(player_ny);
+			}
+			break;
+		case 'r':
+			if (fabs(player_nx - round(player_nx)) > 0.3)
+			{
+				iny = round(player_nx)+1;
+			}
+			else
+			{
+				iny = round(player_nx);
+			}
+			break;
+		case 'l':
+			if (fabs(player_nx - round(player_nx)) > 0.3)
+			{
+				iny = round(player_nx)-1;
+			}
+			else
+			{
+				iny = round(player_nx);
+			}
+			break;
+		
+	}
+	if (feld[(int) (round(iny)*(XSIDE+1) + round(inx))] == '#')
 	{
 		return 1;
 	}
