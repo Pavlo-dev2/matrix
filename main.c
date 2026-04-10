@@ -210,7 +210,7 @@ int checkplayerpossision(char *feld)
 	switch(dir)
 	{
 		case 'u':
-			if (fabs(player_ny - round(player_ny)) > 0.3)
+			if (fabs(player_ny - round(player_ny)) > 0.0001)
 			{
 				iny = round(player_ny)+1;
 			}
@@ -220,7 +220,7 @@ int checkplayerpossision(char *feld)
 			}
 			break;
 		case 'd':
-			if (fabs(player_ny - round(player_ny)) > 0.3)
+			if (fabs(player_ny - round(player_ny)) > 0.0001)
 			{
 				iny = round(player_ny)+1;
 			}
@@ -230,23 +230,23 @@ int checkplayerpossision(char *feld)
 			}
 			break;
 		case 'r':
-			if (fabs(player_nx - round(player_nx)) > 0.3)
+			if (fabs(player_nx - round(player_nx)) > 0.0001)
 			{
-				iny = round(player_nx)+1;
+				inx = round(player_nx)+1;
 			}
 			else
 			{
-				iny = round(player_nx);
+				inx = round(player_nx);
 			}
 			break;
 		case 'l':
-			if (fabs(player_nx - round(player_nx)) > 0.3)
+			if (fabs(player_nx - round(player_nx)) > 0.0001)
 			{
-				iny = round(player_nx)-1;
+				inx = round(player_nx)-1;
 			}
 			else
 			{
-				iny = round(player_nx);
+				inx = round(player_nx);
 			}
 			break;
 		
