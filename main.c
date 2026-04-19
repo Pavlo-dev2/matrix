@@ -10,7 +10,7 @@
 #define XSIDE 16
 #define YSIDE 16
 #define TIME 0.1
-#define TTGDI 0.6//time to get girection = TIME * TTGDI
+#define TTGDI 0.7//time to get girection = TIME * TTGDI
 #define PLAYERSTEP 0.5
 
 int drawfild();
@@ -38,9 +38,19 @@ uint8_t *fbp;
 int fdie;//input file deskriptor
 long double getdirtime;//time to get direction;
 
-int main()
+int main(int count, char* args[])
 {
-	FILE *fp = fopen("map1.txt", "r");
+	if (count < 2)
+	{
+		perror("Map file name is missing");
+		return 1;
+	}
+	FILE *fp = fopen(args[1], "r");
+	if (NULL == fp)
+	{
+		perror("Map file name is missing");
+		return 1;
+	}
 	char *feld = getfeld(fp);
 	fdie = retfd(1, 2);
 	prepfeld(XSIDE, YSIDE);
@@ -197,60 +207,75 @@ int getdir(int fd)
 	return dir;
 }
 
+
 int checkplayerpossision(char *feld)
 {
-	printf("Char: %c, Walue: %d\n%f, %f\n", feld[(int) (player_ny*(XSIDE+1) + player_nx)], (int) (player_ny*(XSIDE+1) + player_nx), player_nx, player_ny);
 	fflush(stdout);
 	if (player_nx < 0 || player_nx > XSIDE-1 || player_ny < 0 || player_ny > YSIDE-1)
 	{
 		return 1;
 	}
-	//feld[(int) (round(player_ny)*(XSIDE+1) + round(player_nx))] == '#'
+//feld[(int) (round(player_ny)*(XSIDE+1) + round(player_nx))] == '#'
 	int inx, iny;
+	if (fabs(player_nx - round(player_nx)) < 0.0001 && fabs(player_ny - round(player_ny)) < 0.0001)
+	{
+		if (feld[(int) (round(player_ny)*(XSIDE+1) + round(player_nx))] == '#')
+		{
+			return 1;
+		}
+	}
 	switch(dir)
 	{
 		case 'u':
 			if (fabs(player_ny - round(player_ny)) > 0.0001)
 			{
-				iny = round(player_ny)+1;
+				iny = (int) player_ny;
 			}
 			else
 			{
 				iny = round(player_ny);
 			}
+			inx = player_nx;
 			break;
 		case 'd':
 			if (fabs(player_ny - round(player_ny)) > 0.0001)
 			{
-				iny = round(player_ny)+1;
+				iny = round(player_ny);
 			}
 			else
 			{
-				iny = round(player_ny);
+				iny = (int) player_ny;
 			}
+			inx = player_nx;
 			break;
 		case 'r':
 			if (fabs(player_nx - round(player_nx)) > 0.0001)
 			{
-				inx = round(player_nx)+1;
+				printf("It hapend1\n");
+				inx = round(player_nx);
 			}
 			else
 			{
-				inx = round(player_nx);
+				inx = (int) player_nx;
 			}
+			iny = player_ny;
 			break;
 		case 'l':
 			if (fabs(player_nx - round(player_nx)) > 0.0001)
 			{
-				inx = round(player_nx)-1;
+				printf("It hapend3\n");
+				inx = (int) player_nx;
 			}
 			else
 			{
+				printf("It hapend2\n");
 				inx = round(player_nx);
 			}
+			iny = player_ny;
 			break;
 		
 	}
+	printf("Dir: %c\nC: %f,%f\nNC: %f, %f\nINC: %d, %d\nChar: %c\n", dir, player_x, player_y, player_nx, player_ny, inx, iny, feld[(int) (round(iny)*(XSIDE+1) + round(inx))]);
 	if (feld[(int) (round(iny)*(XSIDE+1) + round(inx))] == '#')
 	{
 		return 1;
