@@ -21,6 +21,8 @@ int drawplayer();
 int getdir(int fd);
 int checkplayerpossision(char *feld);
 //return 1 if player can't move 
+int findstart(char *feld);
+//set player cords to start possision, retunr 0 if no problems
 
 //player cords
 float player_x = 0;
@@ -52,7 +54,10 @@ int main(int count, char* args[])
 		return 1;
 	}
 	char *feld = getfeld(fp);
+	findstart(feld);
 	fdie = retfd(1, 2);
+	player_nx = player_x;
+	player_ny = player_y;
 	prepfeld(XSIDE, YSIDE);
 	clearframebuffer(fbp);
 	getdirtime = TIME * TTGDI;
@@ -88,7 +93,14 @@ int main(int count, char* args[])
 		}
 		
 		//count player step
-		int s = !checkplayerpossision(feld);
+		int vel = checkplayerpossision(feld);
+		
+		if (vel == 3)
+		{
+			break;
+		}
+
+		int s = !vel;
 		if (dir == 'u' || dir == 'l')
 		{
 			playerstep_x += player_x - player_nx;
@@ -118,10 +130,11 @@ int main(int count, char* args[])
 		clearframebuffer(fbp);
 		drawfild(feld);
 		drawplayer();
-		//fflush(stdout);
 		sleepsec(TIME - timediff(new_time, rettime()));
 	}
 	clearframebuffer(fbp);
+	printf("\nGame over\n");
+	fflush(stdout);
 	return 0;
 }
 
@@ -130,8 +143,15 @@ char* getfeld(FILE *fp)
 	char *feld = calloc(ARRLEN, sizeof(char));
 	char nc;
 	int i;
-	for (i = 0; i < ARRLEN && (feld[i] = nc = fgetc(fp)) != '\0'; i++);
-	//printf("%d\n", i);
+	for (i = 0; i < ARRLEN && (nc = fgetc(fp)) != '\0'; i++)
+	{
+		if (nc != ' ' && nc != '\n' && nc != '#' && nc != 'S' && nc != 'F')
+		{
+			i--;
+			continue;
+		}
+		feld[i] = nc;
+	}
 	return feld;
 }
 
@@ -203,7 +223,6 @@ int getdir(int fd)
 			dir = 'E';
 			break;
 	}
-	//printf("Function done\n");
 	return dir;
 }
 
@@ -215,7 +234,6 @@ int checkplayerpossision(char *feld)
 	{
 		return 1;
 	}
-//feld[(int) (round(player_ny)*(XSIDE+1) + round(player_nx))] == '#'
 	int inx, iny;
 	if (fabs(player_nx - round(player_nx)) < 0.0001 && fabs(player_ny - round(player_ny)) < 0.0001)
 	{
@@ -251,7 +269,6 @@ int checkplayerpossision(char *feld)
 		case 'r':
 			if (fabs(player_nx - round(player_nx)) > 0.0001)
 			{
-				printf("It hapend1\n");
 				inx = round(player_nx);
 			}
 			else
@@ -263,22 +280,47 @@ int checkplayerpossision(char *feld)
 		case 'l':
 			if (fabs(player_nx - round(player_nx)) > 0.0001)
 			{
-				printf("It hapend3\n");
 				inx = (int) player_nx;
 			}
 			else
 			{
-				printf("It hapend2\n");
 				inx = round(player_nx);
 			}
 			iny = player_ny;
 			break;
 		
 	}
-	printf("Dir: %c\nC: %f,%f\nNC: %f, %f\nINC: %d, %d\nChar: %c\n", dir, player_x, player_y, player_nx, player_ny, inx, iny, feld[(int) (round(iny)*(XSIDE+1) + round(inx))]);
 	if (feld[(int) (round(iny)*(XSIDE+1) + round(inx))] == '#')
 	{
 		return 1;
+	}
+	if (feld[(int) (round(iny)*(XSIDE+1) + round(inx))] == 'S')
+	{
+		return 2;
+	}
+	if (feld[(int) (round(iny)*(XSIDE+1) + round(inx))] == 'F')
+	{
+		return 3;
+	}
+	return 0;
+}
+
+int findstart(char *feld)
+{
+	for (int y = 0; y < YSIDE; y++)
+	{
+		for (int x = 0; x < XSIDE; x++)
+		{
+			switch (feld[(int) (y*(XSIDE+1) + x)])
+			{
+				case '\0':
+					return 1;
+				case 'S':
+					player_x = x;
+					player_y = y;
+					return 0;
+			}
+		}
 	}
 	return 0;
 }
