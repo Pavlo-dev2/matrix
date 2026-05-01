@@ -10,11 +10,11 @@ This is a game implementation written in C. The project showcases game developme
 
 - Built with C
 - Game mechanics and logic
-- Cross-platform compatibility
+- Linux only
 
 ## Requirements
 
-- C compiler (gcc, clang, or MSVC)
+- C compiler (gcc or clang)
 - Standard C library (libc)
 - Make (for building with Makefile, if applicable)
 
