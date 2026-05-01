@@ -107,7 +107,3 @@ Pavlo-dev2
 ## Contributing
 
 Contributions are welcome! Feel free to fork this repository and submit pull requests.
-
----
-
-**Note:** Update this README with specific game details, rules, controls, and any additional information about your project.
